@@ -4,8 +4,8 @@
 
 Describe who you need in **any country** (US, Russia, Europe, UK, Asia, LATAM & worldwide). AirPulsar finds real company websites via live Google Search Grounding, explains **"Why this offer fits them"** (0–10 score backed by live site facts and source URLs), verifies decision-makers (DNS/MX & Microsoft 365), and writes personal emails in **any language** — ready for human-approved Gmail dispatch (`gmail.send`) or 25-column RFC 4180 CSV export.
 
-> **Official npm connector:** [`npx -y airpulsar-mcp`](https://www.npmjs.com/package/airpulsar-mcp) (macOS, Linux & Windows)
-> **Hosted MCP & setup docs:** [https://airpulsar.com/mcp](https://airpulsar.com/mcp)
+> **Open-source TypeScript MCP server (`src/index.ts`, `src/tools.json`, `Dockerfile`)** exposing all 25 AirPulsar tools over stdio via `@modelcontextprotocol/sdk` — also published on npm as [`npx -y airpulsar-mcp`](https://www.npmjs.com/package/airpulsar-mcp) (macOS, Linux & Windows)
+> **Setup docs:** [https://airpulsar.com/mcp](https://airpulsar.com/mcp)
 > **Live interactive demo (no login):** [https://airpulsar.com/demo](https://airpulsar.com/demo)
 > **Web workspace:** [https://airpulsar.com](https://airpulsar.com)
 
@@ -24,10 +24,10 @@ Describe who you need in **any country** (US, Russia, Europe, UK, Asia, LATAM & 
 
 ---
 
-## Connect in 30 Seconds
+## Run Locally (npx, Source, or Docker)
 
-1. Get your `AIRPULSAR_API_TOKEN` at [https://airpulsar.com/mcp](https://airpulsar.com/mcp) (7-day free trial, no credit card).
-2. Add the official npm connector (`airpulsar-mcp`) to your MCP client:
+1. Get your `AIRPULSAR_TOKEN` at [https://airpulsar.com/mcp](https://airpulsar.com/mcp) (7-day free trial, no credit card).
+2. Run this MCP server via `npx`, from source, or via Docker:
 
 ### Claude Desktop / Cursor / OpenCode / Antigravity (macOS & Linux)
 ```json
@@ -37,7 +37,7 @@ Describe who you need in **any country** (US, Russia, Europe, UK, Asia, LATAM & 
       "command": "npx",
       "args": ["-y", "airpulsar-mcp"],
       "env": {
-        "AIRPULSAR_API_TOKEN": "YOUR_AIRPULSAR_API_TOKEN"
+        "AIRPULSAR_TOKEN": "YOUR_AIRPULSAR_TOKEN"
       }
     }
   }
@@ -52,16 +52,26 @@ Describe who you need in **any country** (US, Russia, Europe, UK, Asia, LATAM & 
       "command": "cmd",
       "args": ["/c", "npx", "-y", "airpulsar-mcp"],
       "env": {
-        "AIRPULSAR_API_TOKEN": "YOUR_AIRPULSAR_API_TOKEN"
+        "AIRPULSAR_TOKEN": "YOUR_AIRPULSAR_TOKEN"
       }
     }
   }
 }
 ```
 
-### Claude Code (CLI) & Streamable HTTP
+### Build & Run from Source
 ```bash
-claude mcp add --transport http airpulsar https://airpulsar.com/mcp
+git clone https://github.com/HenadzH/airpulsar-mcp.git
+cd airpulsar-mcp
+npm install
+npm run build
+AIRPULSAR_TOKEN="YOUR_AIRPULSAR_TOKEN" node dist/index.js
+```
+
+### Docker
+```bash
+docker build -t airpulsar-mcp .
+docker run -i -e AIRPULSAR_TOKEN="YOUR_AIRPULSAR_TOKEN" airpulsar-mcp
 ```
 
 ---
@@ -141,4 +151,4 @@ claude mcp add --transport http airpulsar https://airpulsar.com/mcp
 
 ## License
 
-Documentation in this repository is released under the [MIT License](LICENSE). The hosted AirPulsar service is a commercial product; see [airpulsar.com](https://airpulsar.com) for terms.
+This MCP server implementation (`src/index.ts`, `src/tools.json`, `Dockerfile`) is open-source software released under the [MIT License](LICENSE).
