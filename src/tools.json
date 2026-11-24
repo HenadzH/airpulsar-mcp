@@ -1,0 +1,644 @@
+[
+  {
+    "name": "get_user_profile",
+    "description": "Get the authenticated user's profile, subscription tier, and company research count.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {}
+    }
+  },
+  {
+    "name": "get_billing_status",
+    "description": "Check the user's 7-day PRO trial remaining days, active billing plan, and workspace status.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {}
+    }
+  },
+  {
+    "name": "list_missions",
+    "description": "List all research and outreach missions for the current user.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "number",
+          "description": "Maximum missions to return"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "create_mission",
+    "description": "Create a new cold outreach mission. Follow the 4 Deliverability Rules for the offer: 1) Zero links in cold emails, 2) Set role and peer-to-peer tone, 3) Focus on value without price lists or promo hype, 4) Low-friction ask for Primary Inbox delivery.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "missionName": {
+          "type": "string",
+          "description": "Descriptive mission name, e.g. 'German Solar Installers'"
+        },
+        "targetProfile": {
+          "type": "string",
+          "description": "Target profile or offer description following the 4 Deliverability Rules (no links, value-focused, no price lists)"
+        },
+        "offerBody": {
+          "type": "string",
+          "description": "Direct offer text / core value proposition (no links, focused on solved pain points)"
+        },
+        "offerSignature": {
+          "type": "string",
+          "description": "Plain text signature (e.g. 'Best regards, Alex | Head of Growth at Acme, +1 555-0199')"
+        },
+        "senderProfile": {
+          "type": "object",
+          "description": "Sender information for outreach emails",
+          "properties": {
+            "senderName": { "type": "string" },
+            "senderRole": { "type": "string" },
+            "senderCompany": { "type": "string" },
+            "offerSummary": { "type": "string" }
+          }
+        },
+        "dailyLimit": {
+          "type": "number",
+          "description": "Max emails to send per day (default 10)"
+        },
+        "timezone": {
+          "type": "string",
+          "description": "Timezone for delivery window, e.g. 'Europe/Berlin' or 'America/New_York'"
+        }
+      },
+      "required": [
+        "missionName",
+        "targetProfile"
+      ]
+    }
+  },
+  {
+    "name": "update_mission_offer",
+    "description": "Update the offer, value proposition, or sender signature for an existing mission in AirPulsar.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "missionId": {
+          "type": "string",
+          "description": "AirPulsar Mission ID"
+        },
+        "offerBody": {
+          "type": "string",
+          "description": "New offer text / value proposition following the 4 Deliverability Rules (no links, value-focused, no price lists)"
+        },
+        "offerSignature": {
+          "type": "string",
+          "description": "New sender signature (plain text)"
+        },
+        "senderProfile": {
+          "type": "object",
+          "description": "Updated sender profile information",
+          "properties": {
+            "senderName": { "type": "string" },
+            "senderRole": { "type": "string" },
+            "senderCompany": { "type": "string" },
+            "offerSummary": { "type": "string" }
+          }
+        }
+      },
+      "required": [
+        "missionId"
+      ]
+    }
+  },
+  {
+    "name": "add_company_lead",
+    "description": "Add a custom company lead directly into a mission with research, key personnel, and 3-step email sequences without running live web search.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "missionId": {
+          "type": "string",
+          "description": "Mission ID to add the lead into"
+        },
+        "companyName": {
+          "type": "string",
+          "description": "Company name"
+        },
+        "website": {
+          "type": "string",
+          "description": "Company website URL (e.g. 'https://solartech.de')"
+        },
+        "location": {
+          "type": "string",
+          "description": "Company headquarters location for timezone-aware scheduling (e.g. 'Munich, Germany', 'Austin, TX, US', 'London, UK')"
+        },
+        "summary": {
+          "type": "string",
+          "description": "Company overview / business description"
+        },
+        "facts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Key facts, pain points, or research highlights"
+        },
+        "technologies": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Detected or relevant technologies"
+        },
+        "contacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "role": { "type": "string" },
+              "email": { "type": "string" }
+            },
+            "required": ["name", "role", "email"]
+          },
+          "description": "Decision-makers with emails"
+        },
+        "emailDrafts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "stepIndex": { "type": "number" },
+              "subject": { "type": "string" },
+              "body": { "type": "string" }
+            },
+            "required": ["stepIndex", "subject", "body"]
+          },
+          "description": "Personalized cold emails for this company"
+        },
+        "scheduleTime": {
+          "type": "string",
+          "description": "When Step 1 should be sent: 'auto' (dynamically spaced in recipient timezone), 'now', 'tomorrow', '+2d', '+1w', or ISO string"
+        }
+      },
+      "required": [
+        "missionId",
+        "companyName",
+        "website",
+        "contacts"
+      ]
+    }
+  },
+  {
+    "name": "update_delivery_settings",
+    "description": "Configure pacing, working hours, and daily dispatch quotas for a mission or workspace.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "missionId": {
+          "type": "string",
+          "description": "Mission ID to update, or omit for workspace defaults"
+        },
+        "dailyQuota": {
+          "type": "number",
+          "description": "Maximum emails to dispatch per day (e.g. 25)"
+        },
+        "minIntervalMinutes": {
+          "type": "number",
+          "description": "Minimum interval between consecutive emails in minutes (e.g. 8)"
+        },
+        "maxIntervalMinutes": {
+          "type": "number",
+          "description": "Maximum interval between consecutive emails in minutes (e.g. 24)"
+        },
+        "workHoursStart": {
+          "type": "string",
+          "description": "Start of sending window in HH:mm (e.g. '09:00')"
+        },
+        "workHoursEnd": {
+          "type": "string",
+          "description": "End of sending window in HH:mm (e.g. '17:00')"
+        },
+        "timezone": {
+          "type": "string",
+          "description": "Default timezone (e.g. 'Europe/Berlin', 'America/New_York')"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "get_leads",
+    "description": "Query leads for a mission with filtering by outreach stage, score, and verification status. Supports searching by email or company name.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "missionId": {
+          "type": "string",
+          "description": "Filter by specific mission ID"
+        },
+        "stage": {
+          "type": "string",
+          "enum": ["ALL", "NEW", "APPROVED", "QUEUED", "CONTACTED", "REPLIED", "REJECTED", "REMINDERS"],
+          "description": "Filter by outreach stage"
+        },
+        "minSuitability": {
+          "type": "number",
+          "description": "Minimum suitability score (0-100)"
+        },
+        "searchQuery": {
+          "type": "string",
+          "description": "Search query to match company name, website domain, or prospect email address"
+        },
+        "limit": {
+          "type": "number",
+          "description": "Maximum leads to retrieve"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "get_company_dossier",
+    "description": "Get complete deep research dossier for a company, including personnel, technology, facts, and drafts.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "leadId": {
+          "type": "string",
+          "description": "Firestore Lead ID"
+        }
+      },
+      "required": [
+        "leadId"
+      ]
+    }
+  },
+  {
+    "name": "update_company_contacts",
+    "description": "Add, update, or reorder key personnel contacts for a prospect company.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "leadId": {
+          "type": "string",
+          "description": "Firestore Lead ID"
+        },
+        "contacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "role": { "type": "string" },
+              "email": { "type": "string" },
+              "linkedin": { "type": "string" },
+              "isPrimary": { "type": "boolean" }
+            },
+            "required": ["name"]
+          },
+          "description": "List of decision-maker contacts"
+        }
+      },
+      "required": [
+        "leadId",
+        "contacts"
+      ]
+    }
+  },
+  {
+    "name": "enrich_company_data",
+    "description": "Append custom factual intelligence notes or confirmed operational facts to a company dossier.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "leadId": {
+          "type": "string",
+          "description": "Firestore Lead ID"
+        },
+        "facts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Array of factual intelligence statements to append"
+        },
+        "technologies": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Array of technologies / equipment used"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Internal operator notes"
+        }
+      },
+      "required": [
+        "leadId"
+      ]
+    }
+  },
+  {
+    "name": "get_scheduled_outreach",
+    "description": "List queued emails and upcoming dispatches ordered chronologically.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "missionId": {
+          "type": "string",
+          "description": "Filter by specific mission ID"
+        },
+        "limit": {
+          "type": "number",
+          "description": "Maximum items to return"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "manage_contact_queue",
+    "description": "Approve, pause, or reject outreach for a prospect company. Critical: When a prospect replies to an outreach email or asks to unsubscribe, call this tool with action='PAUSE' (or 'REJECT') to immediately freeze automated follow-up steps (Step 2, Step 3).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "leadId": {
+          "type": "string",
+          "description": "Firestore Lead ID"
+        },
+        "action": {
+          "type": "string",
+          "enum": ["APPROVE", "PAUSE", "REJECT"],
+          "description": "Action to take on lead: 'PAUSE' halts scheduled follow-ups, 'REJECT' marks lead as unsubscribed/unsuitable"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Reason for pause (e.g. 'Prospect replied: Interested in demo') or rejection note"
+        }
+      },
+      "required": [
+        "leadId",
+        "action"
+      ]
+    }
+  },
+  {
+    "name": "reschedule_outreach",
+    "description": "Reschedule the next automated email dispatch date for a lead.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "leadId": {
+          "type": "string",
+          "description": "Firestore Lead ID"
+        },
+        "nextActionAt": {
+          "type": "string",
+          "description": "ISO datetime string or relative string like '+2d', '+4h', 'tomorrow', 'next_week'"
+        }
+      },
+      "required": [
+        "leadId",
+        "nextActionAt"
+      ]
+    }
+  },
+  {
+    "name": "set_lead_reminder",
+    "description": "Set, update, or clear a task reminder with a target follow-up date and context note for a company. When a prospect replies asking to follow up later ('contact me in 2 weeks', 'out of office until Nov 10', 'busy right now'), use this tool to schedule a reminder so it automatically appears in the user's Reminders tab in AirPulsar.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "leadId": {
+          "type": "string",
+          "description": "Firestore Lead ID"
+        },
+        "reminderDate": {
+          "type": ["string", "null"],
+          "description": "Reminder date in 'YYYY-MM-DD' format, relative string like '+2w', '+1m', 'tomorrow', 'next_week', or null to mark completed/cleared"
+        },
+        "reminderNote": {
+          "type": "string",
+          "description": "Context note explaining what to follow up on (e.g. 'Requested follow-up after ERP implementation in mid-November')"
+        }
+      },
+      "required": [
+        "leadId"
+      ]
+    }
+  },
+  {
+    "name": "update_email_drafts",
+    "description": "Edit custom subjects and body content for the 3-step outreach sequence of a company.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "leadId": {
+          "type": "string",
+          "description": "Firestore Lead ID"
+        },
+        "stepIndex": {
+          "type": "number",
+          "description": "Step number to edit (1, 2, or 3)"
+        },
+        "subject": {
+          "type": "string",
+          "description": "Updated email subject line"
+        },
+        "body": {
+          "type": "string",
+          "description": "Updated email body text"
+        }
+      },
+      "required": [
+        "leadId",
+        "stepIndex"
+      ]
+    }
+  },
+  {
+    "name": "set_campaign_status",
+    "description": "Start, pause, or resume automated email outreach dispatching via Gmail for a mission. NOTE: This ONLY controls outgoing emails and does NOT run company discovery/search.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "missionId": {
+          "type": "string",
+          "description": "Mission ID"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["ACTIVE", "PAUSED"],
+          "description": "Target outreach status: 'PAUSED' halts email sending; 'ACTIVE' resumes sending emails. Never call to search companies."
+        }
+      },
+      "required": [
+        "missionId",
+        "status"
+      ]
+    }
+  },
+  {
+    "name": "manage_blacklist",
+    "description": "View, append, remove, or scrub excluded company domains and email addresses from the user's outreach blacklist.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["GET", "ADD", "REMOVE", "CLEAN_LEADS"],
+          "description": "Action: 'GET' to inspect blacklist, 'ADD' to append domains/emails, 'REMOVE' to delete entries, 'CLEAN_LEADS' to scrub and reject blacklisted leads from a mission"
+        },
+        "items": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Array of domains (e.g. 'competitor.com') or email addresses to add or remove"
+        },
+        "missionId": {
+          "type": "string",
+          "description": "Target mission ID when action is 'CLEAN_LEADS' (or omit to clean all user leads)"
+        }
+      },
+      "required": [
+        "action"
+      ]
+    }
+  },
+  {
+    "name": "manage_campaign_templates",
+    "description": "List, create, or apply reusable cold email campaign sequence templates in AirPulsar.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["LIST", "SAVE", "APPLY", "DELETE"],
+          "description": "Action: 'LIST' to view saved templates, 'SAVE' to create/update a template, 'APPLY' to set a template on a mission, 'DELETE' to remove"
+        },
+        "templateId": {
+          "type": "string",
+          "description": "Template ID (required for 'APPLY' or 'DELETE')"
+        },
+        "missionId": {
+          "type": "string",
+          "description": "Target Mission ID (required for 'APPLY')"
+        },
+        "name": {
+          "type": "string",
+          "description": "Template name (required for 'SAVE')"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "step": { "type": "number" },
+              "subject": { "type": "string" },
+              "body": { "type": "string" },
+              "delayDays": { "type": "number" }
+            },
+            "required": ["step", "subject", "body"]
+          },
+          "description": "Array of sequence steps (for 'SAVE')"
+        },
+        "dailyLimit": {
+          "type": "number",
+          "description": "Optional daily sending limit (e.g. 10)"
+        }
+      },
+      "required": [
+        "action"
+      ]
+    }
+  },
+  {
+    "name": "export_leads_csv",
+    "description": "Export verified leads, decision-makers, and email sequences of a mission as RFC 4180 CSV.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "missionId": {
+          "type": "string",
+          "description": "Mission ID to export"
+        }
+      },
+      "required": [
+        "missionId"
+      ]
+    }
+  },
+  {
+    "name": "get_email_status",
+    "description": "View connected email channels: global workspace Gmail and dedicated per-mission email accounts.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "missionId": {
+          "type": "string",
+          "description": "Check specific mission email override status"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "disconnect_email",
+    "description": "Disconnect/unlink an email account from a specific mission or globally from the workspace.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "missionId": {
+          "type": "string",
+          "description": "Mission ID to disconnect dedicated email from. If omitted, disconnects global workspace email."
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "connect_mission_email",
+    "description": "Connect a specific Gmail account to a mission or globally. If a previous email was bound to the mission, it is automatically unlinked/logged out first.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "missionId": {
+          "type": "string",
+          "description": "Mission ID to bind the email to. If omitted, connects as global workspace email."
+        },
+        "targetEmail": {
+          "type": "string",
+          "description": "Email address user wants to connect (e.g. 'sales@company.com'). Prefills Google sign-in."
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "set_sender_alias",
+    "description": "Configure or switch the active custom domain sender email address (Send-As alias, e.g. 'henadz@airpulsar.com') for outreach. Can be set globally for the workspace or specifically for a mission.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "alias": {
+          "type": "string",
+          "description": "Custom domain sender email configured in Gmail Send-As (e.g. 'henadz@airpulsar.com') or empty string to reset to primary Gmail address"
+        },
+        "missionId": {
+          "type": "string",
+          "description": "Mission ID to bind this sender alias to. If omitted, applies to the global workspace."
+        }
+      },
+      "required": [
+        "alias"
+      ]
+    }
+  },
+  {
+    "name": "get_domain_email_guide",
+    "description": "Get the complete architectural guide and copy-paste SMTP parameters for setting up free custom domain emails in Gmail (Cloudflare Catch-All + Resend SMTP + Send-As) without paid Google Workspace.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "description": "Your custom domain, e.g. 'airpulsar.com'"
+        }
+      },
+      "required": []
+    }
+  }
+]

@@ -1,0 +1,36 @@
+{
+  "name": "airpulsar-mcp",
+  "version": "1.0.1",
+  "description": "AirPulsar Autonomous B2B Outreach & Discovery Copilot for Claude Desktop, Cursor & Antigravity IDE",
+  "main": "./dist/index.js",
+  "bin": {
+    "airpulsar-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "claude",
+    "cursor",
+    "airpulsar",
+    "b2b",
+    "outreach",
+    "leads"
+  ],
+  "author": "AirPulsar (https://airpulsar.com)",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "typescript": "^5.4.5"
+  }
+}
